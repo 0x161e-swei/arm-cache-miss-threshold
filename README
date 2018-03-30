@@ -1,0 +1,5 @@
+For both ARMv7 and ARMv8
+    user level PMC counter access is not enabled by default.
+    need to compile a kernel module to enable
+    
+
