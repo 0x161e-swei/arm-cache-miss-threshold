@@ -60,6 +60,22 @@ static void enable_cycle_counters(void* data) {
 
     /* Write to Count Enable Set Reg, enabling cycle counter (top bit) */
     asm volatile ( "mcr p15, 0, %0, c9, c12, 1" :: "r" (0x80000000));
+
+    asm volatile ( "mrc p15, 0, %0, c0, c0, 0" : "=r"(pmcr));
+    /* check if this is cortex A15 */
+    if ((pmcr & 0xfff0) == 0xc0f0) {
+        asm volatile ( "mrc p15, 1, %0, c15, c0, 3" : "=r"(pmcr));
+        printk(KERN_INFO "L2PFR %x", pmcr);
+        // reading the following regs from nonsecure world faults the machine
+        // MRC p15, 0, <Rt>, c1, c1, 0
+        // asm volatile ( "mrc p15, 0, %0, c1, c1, 0" : "=r"(pmcr));
+        // printk(KERN_INFO "Secure Mode %x", pmcr);
+        /* Read Secure Configuration Register data */
+	    /* disable all hardware prefetchers */
+        // pmcr = 0x400;
+        // asm volatile ( "mcr p15, 1, %0, c15, c0, 3" :: "r"(pmcr));
+    }
+
 }
 
 static void disable_cycle_counters(void* data) {
