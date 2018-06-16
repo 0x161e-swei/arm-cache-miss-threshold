@@ -16,8 +16,7 @@ arm_v8_access_memory(void* pointer)
 inline void
 arm_v8_memory_barrier(void)
 {
-  asm volatile ("DSB SY");
-  asm volatile ("ISB");
+  asm volatile ("DSB SY; ISB");
 }
 
 inline void

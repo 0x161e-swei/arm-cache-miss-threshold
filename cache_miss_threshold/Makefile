@@ -1,4 +1,4 @@
-CXXFLAGS = -O0
+CXXFLAGS = -O0 -I../include
 
 all: cache_miss_threshold
 
