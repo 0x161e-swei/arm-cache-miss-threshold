@@ -5,6 +5,7 @@
 
 #define ARR_SIZE (1024*1024*8)
 #define PAGE_SIZE (4096/sizeof(uint32_t))
+#define NUM_MEASURES 10
 
 int main() {
     srand(time(NULL));
@@ -30,7 +31,7 @@ int main() {
     arm_access_memory((void *)(&marr[ppn * PAGE_SIZE]));
 
     ptr = marr + (ppn * PAGE_SIZE + rand() % PAGE_SIZE);
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < NUM_MEASURES; i++) {
         tic = arm_get_timing();
         arm_memory_barrier();
 
