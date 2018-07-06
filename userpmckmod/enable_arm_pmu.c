@@ -9,7 +9,7 @@
 #if defined(__aarch64__)
 
 static void enable_cycle_counters(void* data) {
-    //         u64 val;
+        u64 val;
 	/* Disable cycle counter overflow interrupt */
 	asm volatile("msr pmintenset_el1, %0" : : "r" ((u64)(0 << 31)));
 	/* Enable cycle counter */
@@ -18,7 +18,8 @@ static void enable_cycle_counters(void* data) {
 	asm volatile("msr pmuserenr_el0, %0" : : "r"(BIT(0) | BIT(2)));
 	/* Clear cycle counter and start */
 	asm volatile("mrs %0, pmcr_el0" : "=r" (val));
-	val |= (BIT(0) | BIT(2));
+        printk(KERN_INFO "pmcr_el0 old value %llx", val);
+	val |= (BIT(0) | BIT(2) | BIT(6));
         isb();
         asm volatile("msr pmcr_el0, %0" : : "r" (val));
 	val = BIT(27);
@@ -27,6 +28,9 @@ static void enable_cycle_counters(void* data) {
 
 static void disable_cycle_counters(void* data) {
 	/* Disable cycle counter */
+	u64 val;
+	asm volatile("mrs %0, pmcr_el0" : "=r" (val));
+        printk(KERN_INFO "pmcr_el0 current value %x", val);
 	asm volatile("msr pmcntenset_el0, %0" :: "r" (0 << 31));
 	/* Disable user-mode access to counters. */
 	asm volatile("msr pmuserenr_el0, %0" : : "r"((u64)0));
@@ -96,7 +100,7 @@ static void __exit fini (void) {
 }
 
 /* Following line is a hack for kernel version compatibility */
-MODULE_INFO(vermagic, "3.10.103+ SMP preempt mod_unload ARMv7 p2v8 ");
+// MODULE_INFO(vermagic, "3.10.103+ SMP preempt mod_unload ARMv7 p2v8 ");
 MODULE_DESCRIPTION("Enables user-mode access to ARMv8 PMU counters");
 MODULE_LICENSE("GPL");
 module_init(init);
